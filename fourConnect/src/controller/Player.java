@@ -1,6 +1,5 @@
 package controller;
 
-import java.awt.Color;
 import javax.swing.JOptionPane;
 
 import exception.ColumnFullException;
@@ -17,6 +16,7 @@ public abstract class Player extends ObservableBord {
 
 	protected Token playerColor;
 	protected static Bord b;
+	private int tmp;
 
 	public Player(Token playerColor, Bord b) {
 		Player.b = b;
@@ -59,8 +59,8 @@ public abstract class Player extends ObservableBord {
 										cb.setTokenColor(playerColor);			
 										Bord.gameStand.add(cb);						
 										notifyObserver();
-										dropped = true;
-
+										dropped = true;	
+										tmp = 42-Bord.lager.size();
 									}
 								}
 							}
@@ -85,6 +85,27 @@ public abstract class Player extends ObservableBord {
 			System.out.println("There is a " + b.testVictory());
 		}
 
+	}
+	
+	/**
+	 * checks if a drop was successful
+	 * @return true or false
+	 */
+	public boolean hasDropped() {
+		boolean hasDropped = false;
+		int tmp2 = 0;
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 7; j++) {
+				if(Bord.bord[i][j] != null) {
+					tmp2++;
+				}
+			}
+		}
+		if(tmp != tmp2) {
+			hasDropped = true;
+		}
+		
+		return hasDropped;	
 	}
 
 	/**

@@ -1,28 +1,37 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+
 import model.Bord;
 import model.Circle;
 import model.CircleBord;
+import model.GameObject;
 import observer_observable.BordObserver;
 import observer_observable.ObservableBord;
 
 public class VierGewinntFrame extends JFrame implements BordObserver, ActionListener {
 
-	private JButton moveCircleButton1 = new JButton("0");
-	private JButton moveCircleButton2 = new JButton("1");
-	private JButton moveCircleButton3 = new JButton("2");
-	private JButton moveCircleButton4 = new JButton("3");
-	private JButton moveCircleButton5 = new JButton("4");
-	private JButton moveCircleButton6 = new JButton("5");
-	private JButton moveCircleButton7 = new JButton("6");
+	protected JButton moveCircleButton1 = new JButton("0");
+	protected JButton moveCircleButton2 = new JButton("1");
+	protected JButton moveCircleButton3 = new JButton("2");
+	protected JButton moveCircleButton4 = new JButton("3");
+	protected JButton moveCircleButton5 = new JButton("4");
+	protected JButton moveCircleButton6 = new JButton("5");
+	protected JButton moveCircleButton7 = new JButton("6");
 	public JButton computer = new JButton("Computer Player");
 	private JMenuBar menu = new JMenuBar();
 	private JMenu file = new JMenu("File");
@@ -33,6 +42,13 @@ public class VierGewinntFrame extends JFrame implements BordObserver, ActionList
 	private JMenuItem rules = new JMenuItem("Game rules");
 	protected static boolean isDisposed;
 //	public JMenuItem computer = new JMenuItem("Computer");
+	
+	private JLabel version = new JLabel(GameObject.versionNummber);
+	public static JLabel centerPanelMessage = new JLabel();
+	public static JLabel rightPanelMessage = new JLabel();
+	private JPanel leftPanel = new JPanel();
+	public static JPanel centerPanel = new JPanel();
+	public static JPanel rightPanel = new JPanel();
 
 	CircleBord circleDrawing = new CircleBord();
 	Circle c = new Circle();
@@ -40,7 +56,8 @@ public class VierGewinntFrame extends JFrame implements BordObserver, ActionList
 	public VierGewinntFrame(Bord b) {
 
 //		setSize(365, 387);
-		setSize(365, 410);
+//		setSize(365, 410);
+		setSize(365, 440);
 		setVisible(true);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,6 +65,17 @@ public class VierGewinntFrame extends JFrame implements BordObserver, ActionList
 		isDisposed = false;
 		setLocationRelativeTo(null);
 		setLayout(null);
+		
+		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, centerPanel);
+        sp.setDividerLocation(50);
+        sp.setPreferredSize(new Dimension(getWidth(), 25));
+        JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, rightPanel);
+        sp2.setDividerLocation(155);
+        sp2.setBounds(0, 350, 365, 25);
+        
+        leftPanel.add(version);
+
+        add(sp2, BorderLayout.SOUTH);
 
 		file.add(saveGame);
 		file.add(loadGame);
@@ -91,9 +119,9 @@ public class VierGewinntFrame extends JFrame implements BordObserver, ActionList
 		moveCircleButton7.setBounds(300, 23, 50, 23);
 		add(moveCircleButton7);
 		
-		computer.setBounds(0, 0, 350, 23);
-		add(computer);
-		computer.setToolTipText("Click this button to drop a color for computer");
+//		computer.setBounds(0, 0, 365, 23);				// Set in VierGewinntStartFrame
+//		add(computer);
+//		computer.setToolTipText("Click this button to drop a color for computer");
 		
 	}
 

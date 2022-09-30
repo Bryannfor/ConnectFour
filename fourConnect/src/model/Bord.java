@@ -5,7 +5,7 @@ import exception.ColumnFullException;
 import exception.IllegalMoveException;
 import model.Token.Winner;
 
-public class Bord extends GameObject{
+public class Bord extends GameObject {
 	private static int col = 7;
 	private static int row = 6;
 	private Token.Color winningColor;
@@ -49,7 +49,6 @@ public class Bord extends GameObject{
 	public static int getRow() {
 		return row;
 	}
-
 
 	/**
 	 * checks if there's still a token in Lager
@@ -168,7 +167,7 @@ public class Bord extends GameObject{
 						}
 					} else {
 						winningStreak = 4;
-					}				
+					}
 				}
 			}
 
@@ -176,7 +175,6 @@ public class Bord extends GameObject{
 
 		return someoneWon;
 	}
-	
 
 	/**
 	 * checks if there is a row winningStreak
@@ -345,20 +343,20 @@ public class Bord extends GameObject{
 		}
 		return canDrop;
 	}
-	
+
 	/**
 	 * checks if a framePlayer is almost winning
 	 * 
 	 * @param color
 	 * @return true/false
 	 */
-	public boolean isColumnDanger(Token.Color color) {
+	public boolean isColumnFramePlayerDanger(Token.Color color) {
 		boolean isDanger = false;
 		boolean isChecked = false; // determines if a column is full
 		int counter = 0;
-
+		//TODO Join both functions in one
 		for (int i = row - 1; i >= 0; i--) {
-			if (bord[i][dangerCol] == null) {
+			if(bord[i][dangerColIndexFrame] == null) {
 				isChecked = true;
 				break;
 			}
@@ -367,16 +365,16 @@ public class Bord extends GameObject{
 		if (isChecked == true) {
 			int winningStreak = 4;
 			for (int j = 0; j < row; j++) {
-				if (bord[j][dangerCol] == null) {
+				if (bord[j][dangerColIndexFrame] == null) {
 					winningStreak = 4;
-				} else if (bord[j][dangerCol] != null) {
+				} else if (bord[j][dangerColIndexFrame] != null) {
 					counter++;
-					if (bord[j][dangerCol].getTokenColor().getFarbe() == color) {
+					if (bord[j][dangerColIndexFrame].getTokenColor().getFarbe() == color) {
 						winningStreak--;
 
-						if (winningStreak == 1 && counter<=3) {
+						if (winningStreak == 1 && counter <= 3) {
 							isDanger = true;
-							dangerColor = color;
+							dangerColorFrame = color;
 							break;
 						}
 					} else {
@@ -394,13 +392,13 @@ public class Bord extends GameObject{
 	 * @param color
 	 * @return true/false
 	 */
-	public boolean isColumnDanger2(Token.Color color) {
+	public boolean isColumnComputerPlayerDanger(Token.Color color) {
 		boolean isDanger = false;
 		boolean isChecked = false;
 		int counter = 0;
 		// TODO check if column is full before dropping
 		for (int i = row - 1; i >= 0; i--) {
-			if (bord[i][dangerCol2] == null) {
+			if (bord[i][dangerColIndexComputer] == null) {
 				isChecked = true;
 				break;
 			}
@@ -408,24 +406,448 @@ public class Bord extends GameObject{
 		if (isChecked == true) {
 			int winningStreak = 4;
 			for (int j = 0; j < row; j++) {
-				if (bord[j][dangerCol2] == null) {
+				if (bord[j][dangerColIndexComputer] == null) {
 					winningStreak = 4;
-				} else if (bord[j][dangerCol2] != null) {
+				} else if (bord[j][dangerColIndexComputer] != null) {
 					counter++;
-					if (bord[j][dangerCol2].getTokenColor().getFarbe() == color) {
+					if (bord[j][dangerColIndexComputer].getTokenColor().getFarbe() == color) {
 						winningStreak--;
 
-						if (winningStreak == 1 && counter<=3) {
+						if (winningStreak == 1 && counter <= 3) {
 							isDanger = true;
-							dangerColor2 = color;
+							dangerColorComputer = color;
 							break;
 						}
-						
+
 					} else {
 						winningStreak = 4;
 					}
 				}
-				
+
+			}
+		}
+		return isDanger;
+	}
+
+	/**
+	 * checks if a framePlayer is almost winning
+	 * 
+	 * @param color
+	 * @return true/false
+	 */
+	public boolean isRowDangerFramePlayer(Token.Color color) {
+		boolean isDanger = false;
+		
+		for (int i = row-1; i >= 0; i--) {
+			int winningStreak = 4;
+			for (int j = 0; j < col; j++) {
+				if (bord[i][j] == null) {
+					winningStreak = 4;
+				} 
+				else if (bord[i][j] != null) {
+					if (bord[i][j].getTokenColor().getFarbe() == color) {
+						winningStreak--;
+
+						if (winningStreak == 1) {							
+							if(j+1 < col){
+								if (bord[i][j+1] == null){
+									if(i == 5) {
+										isDanger = true;
+										dangerColorFrame = color;
+										dangerColIndexFrame = j+1; 	
+										break;
+									}
+									else if(i < 5) {
+										if(bord[i+1][j+1] != null){
+											isDanger = true;
+											dangerColorFrame = color;
+											dangerColIndexFrame = j+1; 	
+											break;
+										}
+									}
+								}								
+							}
+							if(j-3 >= 0) {	
+								if (bord[i][j-3] == null){
+									if(i == 5) {
+										isDanger = true;
+										dangerColorFrame = color;
+										dangerColIndexFrame = j-3; 	
+										break;
+									}
+									else if(i < 5) {
+										if(bord[i+1][j-3] != null){
+											isDanger = true;
+											dangerColorFrame = color;
+											dangerColIndexFrame = j-3; 	
+											break;
+										}
+									}
+								}																	
+							}
+						}
+					} else {
+						winningStreak = 4;
+					}
+				}								
+			}
+			if(isDanger == true) {
+				break;
+			}	
+		}
+		return isDanger;
+	}
+	
+	/**
+	 * checks if a computerPlayer is almost winning
+	 * 
+	 * @param color
+	 * @return true/false
+	 */
+	public boolean isRowDangerComputerPlayer(Token.Color color) {
+		boolean isDanger = false;
+		
+		for (int i = row-1; i >= 0; i--) {
+			int winningStreak = 4;
+			for (int j = 0; j < col; j++) {
+				if (bord[i][j] == null) {
+					winningStreak = 4;
+				} 
+				else if (bord[i][j] != null) {
+					if (bord[i][j].getTokenColor().getFarbe() == color) {
+						winningStreak--;
+
+						if (winningStreak == 1) {							
+							if(j+1 < col){
+								if (bord[i][j+1] == null){
+									if(i == 5) {
+										isDanger = true;
+										dangerColorComputer = color;
+										dangerColIndexComputer = j+1; 	
+										break;
+									}
+									else if(i < 5) {
+										if(bord[i+1][j+1] != null){
+											isDanger = true;
+											dangerColorComputer = color;
+											dangerColIndexComputer = j+1; 	
+											break;
+										}
+									}
+								}								
+							}
+							if(j-3 >= 0) {	
+								if (bord[i][j-3] == null){
+									if(i == 5) {
+										isDanger = true;
+										dangerColorComputer = color;
+										dangerColIndexComputer = j-3; 	
+										break;
+									}
+									else if(i < 5) {
+										if(bord[i+1][j-3] != null){
+											isDanger = true;
+											dangerColorComputer = color;
+											dangerColIndexComputer = j-3; 	
+											break;
+										}
+									}
+								}																	
+							}
+						}
+					} else {
+						winningStreak = 4;
+					}
+				}								
+			}
+			if(isDanger == true) {
+				break;
+			}	
+		}
+		return isDanger;
+	}
+	
+	/**
+	 * special check if a framePlayer is almost winning
+	 * 
+	 * @param color
+	 * @return true/false
+	 */
+	public boolean isRowDangerFrame(Token.Color color) {
+		boolean isDanger = false;
+		int count = 0;					// checks if only cell is null horizontally
+		
+		for (int i = row-1; i >= 0; i--) {
+			int winningStreak = 4;
+			for (int j = 0; j < col; j++) { 
+				if (bord[i][j] != null) {
+					if (bord[i][j].getTokenColor().getFarbe() == color) {
+						winningStreak--;
+
+						if (winningStreak == 1) {
+							if(j-3 >= 0) {	
+								//TODO
+								int z = j-3;
+								int counter = 0;
+								while(counter<4) {
+									if (bord[i][z] == null) {
+										if(i == 5) {
+											isDanger = true;
+											dangerColorFrame = color;
+											dangerColIndexFrame = z;  	
+											break;
+										}
+										else if(i+1 <= 5) {
+											if (bord[i+1][z] != null) {
+												isDanger = true;
+												dangerColorFrame = color;
+												dangerColIndexFrame = z; 	
+												break;
+											}
+										}
+									}
+									counter++;
+									z++;
+								}																	
+							}
+						}
+					} else {
+						winningStreak = 4;
+					}
+				}
+				else {
+					count++;
+					if(count > 1) {
+						winningStreak = 4;
+						count = 0;
+					}
+				}
+			}
+			if(isDanger == true) {
+				break;
+			}	
+		}
+		return isDanger;
+	}
+	
+	/**
+	 * special check if a computerPlayer is almost winning
+	 * 
+	 * @param color
+	 * @return true/false
+	 */
+	public boolean isRowDangerComputer(Token.Color color) {
+		boolean isDanger = false;
+		int count = 0;					// checks if only cell is null horizontally
+		
+		for (int i = row-1; i >= 0; i--) {
+			int winningStreak = 4;
+			for (int j = 0; j < col; j++) { 
+				if (bord[i][j] != null) {
+					if (bord[i][j].getTokenColor().getFarbe() == color) {
+						winningStreak--;
+
+						if (winningStreak == 1) {
+							if(j-3 >= 0) {	
+								//TODO
+								int z = j-3;
+								int counter = 0;
+								while(counter<4) {
+									if (bord[i][z] == null) {
+										if(i == 5) {
+											isDanger = true;
+											dangerColorComputer = color;
+											dangerColIndexComputer = z;  	
+											break;
+										}
+										else if(i+1 <= 5) {
+											if (bord[i+1][z] != null) {
+												isDanger = true;
+												dangerColorComputer = color;
+												dangerColIndexComputer = z;  	
+												break;
+											}
+										}
+									}
+									counter++;
+									z++;
+								}																	
+							}
+						}
+					} else winningStreak = 4;
+				}
+				else {
+					count++;
+					if(count > 1) {
+						winningStreak = 4;
+						count = 0;
+					}
+				}
+			}
+			if(isDanger == true) break;	
+		}
+		return isDanger;
+	}
+	
+	/**
+	 * checks if a framePlayer is almost winning diagonally
+	 * 
+	 * @param color
+	 * @return true/false
+	 */
+	public boolean isDiagonalFrameDanger(Token.Color color) {
+		boolean isDanger = false;
+		
+		// diagonalRightCheck
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				int winningStreak = 3;
+				int rowIndex = i;
+				int colIndex = j;
+				do {
+					if (bord[rowIndex][colIndex] != null) {
+						if (bord[rowIndex][colIndex].getTokenColor().getFarbe() == color) {
+							winningStreak--;
+							if (winningStreak == 0) {
+								if(rowIndex-3 >= 0 && colIndex-3 >= 0){
+									if (bord[rowIndex-3][colIndex-3] == null){
+										if (bord[rowIndex-2][colIndex-3] != null){
+											isDanger = true;
+											dangerColorFrame = color;
+											dangerColIndexFrame = colIndex-3; 	
+											break;
+										}
+									}
+								}
+							}
+						} else {
+							winningStreak = 3;
+						}
+					} else {
+						winningStreak = 3;
+					}
+					colIndex++;
+					rowIndex++;
+				} while (rowIndex < row && colIndex < col);
+			}
+		}
+		
+		//diagonalLeftCheck
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				int winningStreak = 3;
+				int rowIndex = i;
+				int colIndex = j;
+				do {
+					if (bord[rowIndex][colIndex] != null) {
+						if (bord[rowIndex][colIndex].getTokenColor().getFarbe() == color) {
+							winningStreak--;
+							if (winningStreak == 0) {
+								if(rowIndex-3 >= 0 && colIndex+3 < col){
+									if (bord[rowIndex-3][colIndex+3] == null){
+										if (bord[rowIndex-2][colIndex+3] != null){
+											isDanger = true;
+											dangerColorFrame = color;
+											dangerColIndexFrame = colIndex+3; 	
+											break;
+										}
+									}
+								}
+							}
+						} else {
+							winningStreak = 3;
+						}
+					} else {
+						winningStreak = 3;
+					}
+					rowIndex++;
+					colIndex--;
+					if (colIndex < 0) {
+						break;
+					}
+				} while (rowIndex < row && colIndex < col);
+			}
+		}
+		return isDanger;
+	}
+	
+	/**
+	 * checks if a computerPlayer is almost winning diagonally
+	 * 
+	 * @param color
+	 * @return true/false
+	 */
+	public boolean isDiagonalComputerDanger(Token.Color color) {
+		boolean isDanger = false;
+		
+		// diagonalRightCheck
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				int winningStreak = 3;
+				int rowIndex = i;
+				int colIndex = j;
+				do {
+					if (bord[rowIndex][colIndex] != null) {
+						if (bord[rowIndex][colIndex].getTokenColor().getFarbe() == color) {
+							winningStreak--;
+							if (winningStreak == 0) {
+								if(rowIndex-3 >= 0 && colIndex-3 >= 0){
+									if (bord[rowIndex-3][colIndex-3] == null){
+										if (bord[rowIndex-2][colIndex-3] != null){
+											isDanger = true;
+											dangerColorComputer = color;
+											dangerColIndexComputer = colIndex-3; 	
+											break;
+										}
+									}
+								}
+							}
+						} else {
+							winningStreak = 3;
+						}
+					} else {
+						winningStreak = 3;
+					}
+					colIndex++;
+					rowIndex++;
+				} while (rowIndex < row && colIndex < col);
+			}
+		}
+		
+		//diagonalLeftCheck
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				int winningStreak = 3;
+				int rowIndex = i;
+				int colIndex = j;
+				do {
+					if (bord[rowIndex][colIndex] != null) {
+						if (bord[rowIndex][colIndex].getTokenColor().getFarbe() == color) {
+							winningStreak--;
+							if (winningStreak == 0) {
+								if(rowIndex-3 >= 0 && colIndex+3 < col){
+									if (bord[rowIndex-3][colIndex+3] == null){
+										if (bord[rowIndex-2][colIndex+3] != null){
+											isDanger = true;
+											dangerColorComputer = color;
+											dangerColIndexComputer = colIndex+3; 	
+											break;
+										}
+									}
+								}
+							}
+						} else {
+							winningStreak = 3;
+						}
+					} else {
+						winningStreak = 3;
+					}
+					rowIndex++;
+					colIndex--;
+					if (colIndex < 0) {
+						break;
+					}
+				} while (rowIndex < row && colIndex < col);
 			}
 		}
 		return isDanger;

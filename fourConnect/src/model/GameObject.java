@@ -1,15 +1,12 @@
 package model;
 
 import java.awt.Color;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.awt.Cursor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,6 +18,8 @@ import view.VierGewinntStartFrame;
 
 public abstract class GameObject {
 	
+	public static String versionNummber = "1.0";					// Version number
+	public static String language;
 	public static List<Token> lager;
 	public static List<Cell> gameStand = new ArrayList<>();						//for game save	
 	protected static List<String> test = new ArrayList<String>();     	 		//for game load
@@ -38,9 +37,15 @@ public abstract class GameObject {
 	public static int wrongPlayer = 0;
 	private static File folder;
 	private static File file;
+	public static boolean isLoaded;
+	public static Token.Color startColor;
+	public static Token.Color currentColor;
+	public static Token.Color nextColor;
+	public static Token.Color loadColor;
 	
 	private static File file1;   //extra for player1
 	private static File file2;   //extra for player1
+	
 	
 //	private String ip = "Local horst";
 //	private int port  = 2222;
@@ -51,16 +56,36 @@ public abstract class GameObject {
 //	private DataOutputStream dos;
 //	private DataInputStream dis;
 	
+	public enum languages{
+		EN {
+		    @Override
+		    public String toString() {
+		      return "English";
+		    }
+		  },
+		 DE {
+		    @Override
+		    public String toString() {
+		      return "Germany";
+		    }
+		  },
+		 FR {
+		    @Override
+		    public String toString() {
+		      return "French";
+		    }
+		  }	
+	}
 	
 	
 	
-	public String tmpColor = "";       				//the last played colour before a save
+	public String tmpColor = "";       							//the last played colour before a save
 	
-	public static Token.Color dangerColor;  		//vertical
-	public static int dangerCol;					//vertical  used in bord
+	public static Token.Color dangerColorFrame;  					//vertical
+	public static int dangerColIndexFrame;								//vertical  used in bord
 	
-	public static int dangerCol2;					//vertical used in framePlayer	
-	public static Token.Color dangerColor2; 		//vertical
+	public static int dangerColIndexComputer;					//vertical used in framePlayer	
+	public static Token.Color dangerColorComputer; 					//vertical
 	
 	public abstract void dropToken(Token farbe, int columnIndex);
 	
@@ -175,13 +200,13 @@ public abstract class GameObject {
 				
 				OutputStream stream1 = new FileOutputStream(path4);		//START
 				String tmp = "";
-				tmp += dangerColor2.toString() + " " + dangerCol2;
+				tmp += dangerColorComputer.toString() + " " + dangerColIndexComputer;
 				stream1.write(tmp.getBytes());
 				stream1.close();	
 				
 				OutputStream stream2 = new FileOutputStream(path5);
 				String tmp1 = "";
-				tmp1 += dangerColor.toString() + " " + dangerCol;
+				tmp1 += dangerColorFrame.toString() + " " + dangerColIndexFrame;
 				stream2.write(tmp1.getBytes());
 				stream2.close();
 																		//END
@@ -253,18 +278,22 @@ public abstract class GameObject {
 			}
 
 			if (tmp.get(0).equals("YELLOW")) {
-				dangerColor2 = Token.Color.YELLOW;
+				dangerColorComputer = Token.Color.YELLOW;
+				nextColor = Token.Color.YELLOW;
 			} else if (tmp.get(0).equals("RED")) {
-				dangerColor2 = Token.Color.RED;
+				dangerColorComputer = Token.Color.RED;
+				nextColor = Token.Color.RED;
 			}
-			dangerCol2 = Integer.parseInt(tmp.get(1));
+			dangerColIndexComputer = Integer.parseInt(tmp.get(1));
 
 			if (tmp1.get(0).equals("YELLOW")) {
-				dangerColor = Token.Color.YELLOW;
+				dangerColorFrame = Token.Color.YELLOW;
+				nextColor = Token.Color.YELLOW;
 			} else if (tmp1.get(0).equals("RED")) {
-				dangerColor = Token.Color.RED;
+				dangerColorFrame = Token.Color.RED;
+				nextColor = Token.Color.RED;
 			}
-			dangerCol = Integer.parseInt(tmp1.get(1)); // END
+			dangerColIndexFrame = Integer.parseInt(tmp1.get(1)); // END
 
 		}
 		
@@ -416,6 +445,10 @@ public abstract class GameObject {
 		clearFrame();
 		countRestarted++;
 		
+		if(isLoaded == true) {
+			load();
+		}
+	
 
 		if (countRestarted == 1) {
 //			JOptionPane.showMessageDialog(new JOptionFrame(), "       Game Restarted");
